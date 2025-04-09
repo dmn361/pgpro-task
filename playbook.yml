@@ -1,0 +1,53 @@
+---
+- name: Get load averages and set vars
+  
+  hosts: All
+  gather_facts: false
+  remote_user: root
+  tasks:
+    - name: Get load averages
+      shell: cat /proc/loadavg
+      register: cpu_load
+
+    - name: Set one-minute load average var
+      set_fact:
+        one_min_la: "{{ cpu_load.stdout.split() | first | float }}"
+
+- name: Set PostgreSQL installation target
+  
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Target - Alma
+      set_fact:
+        target_system: "alma"
+      when: hostvars['debian'].one_min_la>hostvars['alma'].one_min_la
+    
+    - name: Target - Debian
+      set_fact:
+        target_system: "debian"
+      when: (hostvars['debian'].one_min_la<hostvars['alma'].one_min_la)or(hostvars['debian'].one_min_la==hostvars['alma'].one_min_la)
+
+- name: Install and configure PosgreSQL if debian
+  
+  hosts: debian
+  gather_facts: false
+  remote_user: root
+  tasks: 
+
+    - name: Install PostgreSQL on Debian
+      shell: /tmp/pg_debian.sh {{ hostvars['alma']['ansible_host'] }} 
+      when: hostvars["localhost"].target_system == "debian"
+
+- name: Install and configure PosgreSQL if alma
+
+  hosts: alma
+  gather_facts: false
+  remote_user: root
+  tasks:
+
+    - name: Install PostgreSQL on Alma
+      shell: /tmp/pg_alma.sh {{ hostvars['debian']['ansible_host'] }}
+      when: hostvars["localhost"].target_system == "alma"
+
+
