@@ -21,11 +21,9 @@ fi
 
 cat > inventory.ini << EOF
 [All]
-debian ansible_host=$DEBIAN_IP
-alma ansible_host=$ALMA_IP
+debian ansible_host=$DEBIAN_IP ansible_user=root
+alma ansible_host=$ALMA_IP ansible_user=root
 EOF
 
-scp scripts/pg_debian.sh root@$DEBIAN_IP:/tmp/
-scp scripts/pg_alma.sh root@$ALMA_IP:/tmp/
 
 ansible-playbook playbook.yml -i inventory.ini
