@@ -19,7 +19,7 @@ cd pgpro-task
 Не указано, что считать под загруженостью системы, поэтому за основу был взят минутный **Load Average** (в случае одинаковых LA - ставит на Debian)
 
 Конкретных версий дистрибутивов и PostgreSQL не указано, поэтому были выбраны:
-- Debian 12 (Bookworm)
+- Debian 12.10 (Bookworm)
 - AlmaLinux 9.5 (Teal Serval)
 - PostgreSQL 15
 
